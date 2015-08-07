@@ -14,8 +14,11 @@ package MiniMinecraft;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import javax.sound.sampled.*;
+import java.net.URL;
 
-public class MainApp extends JApplet {
+public class MainApp extends JFrame {
     private static Map currentMap;
     private static final CardLayout cl = new CardLayout();
     
@@ -27,6 +30,20 @@ public class MainApp extends JApplet {
     private final JButton mapChooser[] = new JButton[4];
     private final JLabel  mapLabels[]  = new JLabel[mapChooser.length];
     private static String currentMapName;
+    
+    public static void main(String [] args)
+    {
+        final MainApp ma = new MainApp();
+        ma.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ma.setVisible(true);
+        ma.addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                ma.destroy();
+            }
+        });
+    }
     
     public MainApp() {
         getContentPane().setLayout(cl);
@@ -78,14 +95,14 @@ public class MainApp extends JApplet {
             }
         });
         
+        init();
     }
     
-    @Override
-    public void init() {
+    public final void init() {
         setSize(300, 300);
-        Frame c = (Frame)this.getParent().getParent();
-        c.setTitle("MiniMinecraft");
-        c.setResizable(false);
+        setTitle("MiniMinecraft");
+        setLocationRelativeTo(null);
+        setResizable(false);
         loadRes(); //loads our images
     }
     
@@ -93,6 +110,7 @@ public class MainApp extends JApplet {
     //and starts the game
     public void startGamePanel() {
         setSize(1000, 700);
+        setLocationRelativeTo(null);
         cl.next(getContentPane());
         Map.mountGameState();
     }
@@ -100,13 +118,13 @@ public class MainApp extends JApplet {
     //Brings the menu panel to the front of the CardLayout
     public void switchToMenu() {
         setSize(300, 300);
+        setLocationRelativeTo(null);
         cl.next(getContentPane());
         currentMapName = null;
     }
     
     //Unmounts gamestate for saving before the applet is closed 
     //incase the user exits by closing the applet 
-    @Override
     public void destroy() {
         if(currentMapName != null)
             Map.unMountGameState();
@@ -142,10 +160,28 @@ public class MainApp extends JApplet {
         GameScreen.images[Cloud.CLOUD2]        = new ImageIcon(getClass().getResource("/res/cloud2.png"));
         GameScreen.images[Map.MOON]            = new ImageIcon(getClass().getResource("/res/moon.png"));
 
-        Map.sounds[Map.THEME_S]                = getAudioClip(getClass().getResource("/res/menusong1.wav"));
-        Map.sounds[Map.BREAK_S]                = getAudioClip(getClass().getResource("/res/break.wav"));
-        Map.sounds[Player.P_DAMAGE1]           = getAudioClip(getClass().getResource("/res/playerDamage1.wav"));
-        Map.sounds[Player.Z_DAMAGE1]           = getAudioClip(getClass().getResource("/res/zombieDamage1.wav"));
-        Map.sounds[Player.SHEEP_BAA]           = getAudioClip(getClass().getResource("/res/sheepNoise1.wav"));
+            
+        Map.sounds[Map.THEME_S]                = fetchClip("/res/menusong1.wav");
+        Map.sounds[Map.BREAK_S]                = fetchClip("/res/break.wav");
+        Map.sounds[Player.P_DAMAGE1]           = fetchClip("/res/playerDamage1.wav");
+        Map.sounds[Player.Z_DAMAGE1]           = fetchClip("/res/zombieDamage1.wav");
+        Map.sounds[Player.SHEEP_BAA]           = fetchClip("/res/sheepNoise1.wav");
+         
+    }
+    
+    public Clip fetchClip(String path) {
+        try {
+            
+            URL url = getClass().getResource(path);
+            AudioInputStream ais = AudioSystem.getAudioInputStream(url);
+            Clip clip = AudioSystem.getClip();
+            clip.open(ais);
+            return clip;
+            
+        } catch(UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            System.err.println(e);
+        }
+        
+        return null;
     }
 }

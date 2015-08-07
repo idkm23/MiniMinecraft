@@ -71,8 +71,11 @@ public abstract class Actor extends Entity {
         imageID = HURT_ID;
         
         //if the damaged actor is on screen, play the actor's sound
-        if(isOnScreen())
-            Map.sounds[AUDIO_ID].play();
+        if(isOnScreen()) {
+            Map.sounds[AUDIO_ID].stop();
+            Map.sounds[AUDIO_ID].setFramePosition(0);
+            Map.sounds[AUDIO_ID].start();
+        }
     }
     
     //used for moving AI actors

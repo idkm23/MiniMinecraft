@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.applet.AudioClip;
+import javax.sound.sampled.*;
 import java.io.FileNotFoundException;
 
 public class Map {
@@ -20,7 +20,7 @@ public class Map {
     private    static           double           timeOfDay = 0;
     private    static           Point            mouse;
     protected  static   final   Player           player = new Player();
-    protected  static   final   AudioClip[]      sounds = new AudioClip[10];
+    protected  static   final   Clip[]           sounds = new Clip[10];
     protected  static           MainApp          mainApp;
     
     
@@ -235,7 +235,8 @@ public class Map {
                 blockMap.remove(i);
                 entityList.add(new ItemEntity(temp.x, temp.y, temp.blockID)); //create an item that can be picked up for it
                 sounds[BREAK_S].stop();
-                sounds[BREAK_S].play(); //play breaking sound
+                sounds[BREAK_S].setFramePosition(0);
+                sounds[BREAK_S].start(); //play breaking sound
                 return true; //returns a boolean to inform the caller if the algorithm broke a block
             }
             

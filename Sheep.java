@@ -24,7 +24,11 @@ public class Sheep extends Actor {
         
         //baa if 
         if(isOnScreen() && (int)(Math.random() * 400) == 0)
-            Map.sounds[SHEEP_BAA].play();
+        {
+            Map.sounds[SHEEP_BAA].stop();    
+            Map.sounds[SHEEP_BAA].setFramePosition(0);    
+            Map.sounds[SHEEP_BAA].start();
+        }
         
         //move one step, left or right, based on stepsToWalk
         int horzMove = Entity.BASE_MOVE_SPEED/2 * ( stepsToWalk > 0 ? -1 : 1 );
