@@ -1,6 +1,6 @@
 package MiniMinecraft;
 
-//something affected by gravity and has health/attack
+// something affected by gravity and has health/attack
 public abstract class Actor extends Entity {
     private final double ATTKCOOL = .7;
     private double currentAttkCool, hurtCool;
@@ -8,7 +8,8 @@ public abstract class Actor extends Entity {
     private int health;
     protected final int attack, itemOnDeath;
     
-    public Actor(double x, double y, int health, int attack, int itemOnDeath, double width, double height, int imageID, int hurtID, int audioID) {
+    public Actor(double x, double y, int health, int attack, int itemOnDeath,
+            double width, double height, int imageID, int hurtID, int audioID) {
         super(x, y, width, height, imageID);
         AUDIO_ID = audioID;
         HURT_ID = hurtID;
@@ -25,14 +26,14 @@ public abstract class Actor extends Entity {
         tickCoolDown();
     }
     
-    //this actor attempts to swing(attack) at another
+    // this actor attempts to swing(attack) at another
     public void swingAt(Actor a) {
-        
-        //if it hasn't attacked recently and the target actor is alive then
-        //the actor damages the other
+        // if it hasn't attacked recently and the target actor is alive then
+        // the actor damages the other
         if(currentAttkCool <= 0 && !a.isDead()) {
-            currentAttkCool = ATTKCOOL; //reset attkCool so the actor cannot attack rapidly
-            a.damage(attack, (a.trueX() - trueX() > 0));  
+            // reset attkCool so the actor cannot attack rapidly
+            currentAttkCool = ATTKCOOL;
+            a.damage(attack, (a.trueX() - trueX() > 0));
         }
     }
     
@@ -41,26 +42,29 @@ public abstract class Actor extends Entity {
     }
     
     public void heal(int d) {
-        if((health += d) > MAX_HEALTH)
+        if((health += d) > MAX_HEALTH) {
             health = MAX_HEALTH;
+        }
     }
     
     public void tickCoolDown() {
-        if(currentAttkCool > 0)
+        if(currentAttkCool > 0) {
             currentAttkCool -= .05;
+        }
         if(hurtCool > 0) {
             hurtCool -= .05;
         }
     }
     
-    //whenever an actor dies blood particles are generated
+    // whenever an actor dies blood particles are generated.
     public void generateBlood() {
-        int bloodDrops = (int)(Math.random()*8) + 30;
+        int bloodDrops = (int)(Math.random() * 8) + 30;
         for(int j = 0; j < bloodDrops; j++)
             Map.entityList.add(new BloodEntity(this));
     }
     
-    //damages the actor, knocks them away from the source, and changes the actor's image red temporarily
+    // damages the actor, knocks them away from the source, and changes the
+    // actor's image red temporarily.
     public void damage(int d, boolean fromWhere) {
         health -= d;
         
@@ -70,7 +74,7 @@ public abstract class Actor extends Entity {
         startHurtCool();
         imageID = HURT_ID;
         
-        //if the damaged actor is on screen, play the actor's sound
+        // if the damaged actor is on screen, play the actor's sound
         if(isOnScreen()) {
             Map.sounds[AUDIO_ID].stop();
             Map.sounds[AUDIO_ID].setFramePosition(0);
@@ -78,21 +82,24 @@ public abstract class Actor extends Entity {
         }
     }
     
-    //used for moving AI actors
+    // used for moving AI actors.
     public void moveAIHorz(int stepSize) {
-        if(stepSize > 0)
+        if(stepSize > 0) {
             setOrientation(RIGHT);
-        else
+        } else {
             setOrientation(LEFT);
+        }
 
-        //if the actor can move in that horizontal direction, move it
-        //otherwise, have the actor attempt to jump over the obstacle
-        if(!isObstructed(x + stepSize, y - 1)) 
+        // if the actor can move in that horizontal direction, move it
+        // otherwise, have the actor attempt to jump over the obstacle.
+        if(!isObstructed(x + stepSize, y - 1)) {
             x += stepSize;
-        else
+        } else {
             jump();
+        }
     }
     
+    // prevents actors from getting hit rapidly
     public void startHurtCool() {
          hurtCool = .55;   
     }
@@ -106,10 +113,11 @@ public abstract class Actor extends Entity {
     }
     
     public void setHealth(int h) {
-        if(h > MAX_HEALTH)
+        if(h > MAX_HEALTH) {
             health = MAX_HEALTH;
-        else
+        } else {
             health = h;
+        }
     }
     
     public int getHealth() {
